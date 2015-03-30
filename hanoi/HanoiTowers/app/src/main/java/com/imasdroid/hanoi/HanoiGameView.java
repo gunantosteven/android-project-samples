@@ -1,5 +1,7 @@
 package com.imasdroid.hanoi;
 
+import java.util.ArrayList;
+import java.util.Map;
 import java.util.Stack;
 
 import android.content.Context;
@@ -11,16 +13,25 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.RoundRectShape;
 import android.graphics.drawable.shapes.Shape;
+import android.os.Handler;
 import android.view.View;
 
 public class HanoiGameView extends View {
 
+    // to save shift
+    class Langkah
+    {
+        public char asal, tujuan;
+    }
+
 	/** number of disks of the game */
-	private int numberOfDisks;
+	public int numberOfDisks;
+
+    ArrayList<Langkah> listLangkah = new ArrayList<Langkah>();
 
 	/**
 	 * points to the rod with a disk selected. Used on
-	 * {@link #actionOnSelectedRod} to distinguish when a rod contains a disk
+	 * {@link #//actionOnSelectedRod} to distinguish when a rod contains a disk
 	 * selected and ready to move to a different rod
 	 */
 	private Stack<HanoiDiskShape> rodWithDiskSelected = null;
@@ -30,7 +41,7 @@ public class HanoiGameView extends View {
 			+ MAX_DISKS;
 
 	/** the three rods that form the towers of hanoi game */
-	private Stack<HanoiDiskShape> leftRod, middleRod, rightRod;
+	public Stack<HanoiDiskShape> leftRod, middleRod, rightRod;
 
 	////////////////////////////
 	// static disk properties //
@@ -41,6 +52,8 @@ public class HanoiGameView extends View {
 			0, 0, 0 };
 	private static int diskSelectedColor = 0x88FF8844;
 	private static int diskUnselectedColor = 0xFFFF8844;
+
+    private int hashCodeLeft, hashCodeMiddle, hashCodeRight;
 
 	/**
 	 * @param context
@@ -84,7 +97,60 @@ public class HanoiGameView extends View {
 
 			leftRod.push(new HanoiDiskShape(diskSize));
 		}
+
+        // solve by computer and save steps to ArrayList
+        memindahkanPiringan(numberOfDisks, 'A', 'B', 'C');
 	}
+
+
+    public void memindahkanPiringan(int n, char Asal, char Bantuan, char Tujuan) {
+
+        if(n>0){
+            memindahkanPiringan(n-1, Asal, Tujuan, Bantuan);//memindahka asal bantuan ke tujuan
+
+            Langkah l = new Langkah();
+            l.asal= Asal;
+            l.tujuan = Tujuan;
+            listLangkah.add(l);
+
+
+            memindahkanPiringan(n-1, Bantuan, Asal, Tujuan);//memindahkan bantuan tujuan ke asal
+        }
+
+    }
+
+    public void solveHanoi(int count)
+    {
+        Langkah l = listLangkah.get(count);
+
+        if(l.asal == 'A')
+        {
+            onTouch(30, 50);  // 'A'
+        }
+        else if(l.asal == 'B')
+        {
+            onTouch(180, 50); // 'B'
+        }
+        else if(l.asal == 'C')
+        {
+            onTouch(350, 50); // 'C'
+        }
+
+        if(l.tujuan == 'A')
+        {
+            onTouch(30, 50);  // 'A'
+        }
+        else if(l.tujuan == 'B')
+        {
+            onTouch(180, 50); // 'B'
+        }
+        else if(l.tujuan == 'C')
+        {
+            onTouch(350, 50); // 'C'
+        }
+
+        invalidate();
+    }
 
 	@Override
 	protected void onDraw(Canvas canvas) {
@@ -183,7 +249,7 @@ public class HanoiGameView extends View {
 	 * @param touchedRod
 	 * @return
 	 */
-	private boolean actionOnTouchedRod(Stack<HanoiDiskShape> touchedRod) {
+	public boolean actionOnTouchedRod(Stack<HanoiDiskShape> touchedRod) {
 
 		boolean gameFinished = false;
 
