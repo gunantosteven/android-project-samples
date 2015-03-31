@@ -1,6 +1,7 @@
 package com.imasdroid.hanoi;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -23,6 +24,8 @@ public class HanoiGameActivity extends Activity {
 
     int count = 0;
 
+    String number;
+
     Timer t;
     TimerTask task;
 
@@ -31,8 +34,13 @@ public class HanoiGameActivity extends Activity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
+        // Get the message from the intent
+        Intent intent = getIntent();
+        number = intent.getStringExtra(MainActivity.NUMBER_DISK);
+
+
 		// initialize Hanoi Game
-		hanoiGame = new HanoiGameView(this, DEFAULT_NUMBER_OF_DISKS);
+		hanoiGame = new HanoiGameView(this, Integer.parseInt(number));
 
 		// Hide the window title and top bar
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -42,7 +50,11 @@ public class HanoiGameActivity extends Activity {
 		
 		setContentView(hanoiGame);
 
-        startTimer(); // Run Solving Tower Hanoi
+        new Handler().postDelayed(new Runnable() {
+            public void run() {
+                startTimer(); // Run Solving Tower Hanoi
+            }
+        }, 2000);
     }
 
     public void startTimer(){
@@ -58,6 +70,14 @@ public class HanoiGameActivity extends Activity {
                         if(count == hanoiGame.listLangkah.size())
                         {
                             t.cancel();
+                            Toast.makeText(getApplicationContext(), "You Win!!", Toast.LENGTH_LONG).show();
+
+                            new Handler().postDelayed(new Runnable() {
+                                public void run() {
+                                    Intent i = new Intent(HanoiGameActivity.this, MainActivity.class);
+                                    startActivity(i);
+                                }
+                            }, 2000);
                             return;
                         }
                         hanoiGame.solveHanoi(count);
@@ -88,7 +108,12 @@ public class HanoiGameActivity extends Activity {
 
 				Toast.makeText(getApplicationContext(), "You Win!!", Toast.LENGTH_LONG).show();
 
-				hanoiGame.startGame(DEFAULT_NUMBER_OF_DISKS);
+                new Handler().postDelayed(new Runnable() {
+                    public void run() {
+                        Intent i = new Intent(HanoiGameActivity.this, MainActivity.class);
+                        startActivity(i);
+                    }
+                }, 2000);
 			}
 		}
 
