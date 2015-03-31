@@ -125,28 +125,28 @@ public class HanoiGameView extends View {
 
         if(l.asal == 'A')
         {
-            onTouch(30, 50);  // 'A'
+            actionOnTouchedRod(leftRod);  // 'A'
         }
         else if(l.asal == 'B')
         {
-            onTouch(180, 50); // 'B'
+            actionOnTouchedRod(middleRod); // 'B'
         }
         else if(l.asal == 'C')
         {
-            onTouch(350, 50); // 'C'
+            actionOnTouchedRod(rightRod); // 'C'
         }
 
         if(l.tujuan == 'A')
         {
-            onTouch(30, 50);  // 'A'
+            actionOnTouchedRod(leftRod);  // 'A'
         }
         else if(l.tujuan == 'B')
         {
-            onTouch(180, 50); // 'B'
+            actionOnTouchedRod(middleRod); // 'B'
         }
         else if(l.tujuan == 'C')
         {
-            onTouch(350, 50); // 'C'
+            actionOnTouchedRod(rightRod); // 'C'
         }
 
         invalidate();
@@ -176,7 +176,7 @@ public class HanoiGameView extends View {
 		}
 		canvas.restore();
 
-		canvas.translate(150, 0);
+		canvas.translate(175, 0);
 		canvas.save();
 		for (HanoiDiskShape disk : middleRod) {
 
@@ -185,7 +185,7 @@ public class HanoiGameView extends View {
 		}
 		canvas.restore();
 
-		canvas.translate(150, 0);
+		canvas.translate(168, 0);
 		canvas.save();
 		for (HanoiDiskShape disk : rightRod) {
 

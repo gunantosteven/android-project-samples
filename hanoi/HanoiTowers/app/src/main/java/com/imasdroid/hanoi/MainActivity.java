@@ -52,8 +52,16 @@ public class MainActivity extends Activity {
         Intent intent = new Intent(this, HanoiGameActivity.class);
         try
         {
-            intent.putExtra(NUMBER_DISK, jumlahPiringan.getText().toString());
-            startActivity(intent);
+            int number = Integer.parseInt(jumlahPiringan.getText().toString());
+            if(number >= 3 && number <= 6)
+            {
+                intent.putExtra(NUMBER_DISK, jumlahPiringan.getText().toString());
+                startActivity(intent);
+            }
+            else
+            {
+                Toast.makeText(getApplicationContext(), "Error Input Number Range", Toast.LENGTH_LONG).show();
+            }
         }
         catch(NumberFormatException ex)
         {

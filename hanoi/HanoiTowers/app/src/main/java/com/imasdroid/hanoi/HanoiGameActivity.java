@@ -97,7 +97,7 @@ public class HanoiGameActivity extends Activity {
 	 * @param event The motion event
 	 * @return True if the event was handled, false otherwise.
 	 */
-	@Override
+	/*@Override
 	public boolean onTouchEvent(MotionEvent event) {
 
 		if (event.getAction() == MotionEvent.ACTION_DOWN) {
@@ -118,5 +118,5 @@ public class HanoiGameActivity extends Activity {
 		}
 
 		return true;
-	}
+	}*/
 }
