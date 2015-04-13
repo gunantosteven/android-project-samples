@@ -22,6 +22,13 @@ public class HanoiGameView extends View {
     class Langkah
     {
         public char asal, tujuan;
+
+        Langkah(char asal, char tujuan)
+        {
+            this.asal = asal;
+            this.tujuan = tujuan;
+        }
+
     }
 
 	/** number of disks of the game */
@@ -36,12 +43,12 @@ public class HanoiGameView extends View {
 	 */
 	private Stack<HanoiDiskShape> rodWithDiskSelected = null;
 
-	private static final int MAX_DISKS = 6;
+	private static final int MAX_DISKS = 7;
 	private static final String ERROR_MAX_NUMBER_DISKS_EXCEEDED = "Max number of disks is "
 			+ MAX_DISKS;
 
 	/** the three rods that form the towers of hanoi game */
-	public Stack<HanoiDiskShape> leftRod, middleRod, rightRod;
+	public Stack<HanoiDiskShape> leftRod, middleRod, rightRod, lastRod;
 
 	////////////////////////////
 	// static disk properties //
@@ -50,10 +57,10 @@ public class HanoiGameView extends View {
 	// creates a rounded rectangle by the top side
 	private static float[] diskOuterRadius = new float[] { 12, 12, 12, 12, 0,
 			0, 0, 0 };
-	private static int diskSelectedColor = 0x88FF8844;
-	private static int diskUnselectedColor = 0xFFFF8844;
+	private static int diskSelectedColor = 0xFF0000FF;
+	private static int diskUnselectedColor = 0xFF0000FF;
 
-    private int hashCodeLeft, hashCodeMiddle, hashCodeRight;
+    private int hashCodeLeft, hashCodeMiddle, hashCodeRight, hashCodeLast;
 
 	/**
 	 * @param context
@@ -66,7 +73,7 @@ public class HanoiGameView extends View {
 		// loads the background image that contains the bottom wood and the
 		// figure of the three rods
 		Bitmap hanoiBackground = BitmapFactory.decodeResource(getResources(),
-				R.drawable.hanoi_background);
+				R.drawable.hanoi_background4);
 		setBackgroundDrawable(new BitmapDrawable(hanoiBackground));
 
 		startGame(_numberOfDisks);
@@ -92,6 +99,7 @@ public class HanoiGameView extends View {
 		leftRod = new Stack<HanoiDiskShape>();
 		middleRod = new Stack<HanoiDiskShape>();
 		rightRod = new Stack<HanoiDiskShape>();
+        lastRod = new Stack<HanoiDiskShape>();
 
 		for (int diskSize = numberOfDisks; diskSize >= 1; diskSize--) {
 
@@ -99,25 +107,45 @@ public class HanoiGameView extends View {
 		}
 
         // solve by computer and save steps to ArrayList
-        memindahkanPiringan(numberOfDisks, 'A', 'B', 'C');
+        memindahkanPiringan(numberOfDisks, 'A', 'B', 'C', 'D');
 	}
 
-
+    // 3 Pegs
     public void memindahkanPiringan(int n, char Asal, char Bantuan, char Tujuan) {
 
         if(n>0){
-            memindahkanPiringan(n-1, Asal, Tujuan, Bantuan);//memindahka asal bantuan ke tujuan
+            memindahkanPiringan(n - 1, Asal, Tujuan, Bantuan);//memindahka asal bantuan ke tujuan
 
-            Langkah l = new Langkah();
-            l.asal= Asal;
-            l.tujuan = Tujuan;
-            listLangkah.add(l);
-
+            listLangkah.add(new Langkah(Asal, Tujuan));
 
             memindahkanPiringan(n-1, Bantuan, Asal, Tujuan);//memindahkan bantuan tujuan ke asal
         }
 
     }
+
+    // 4 Pegs
+    public void memindahkanPiringan(int topN, char source, char intermed1, char intermed2, char dest) {
+
+        if( topN == 1)
+        {
+            listLangkah.add(new Langkah(source, dest));
+        }
+        else if( topN == 2 )
+        {
+            listLangkah.add(new Langkah(source, intermed1));
+            listLangkah.add(new Langkah(source, dest));
+            listLangkah.add(new Langkah(intermed1, dest));
+        }
+        else
+        {
+            memindahkanPiringan(topN - 2, source, intermed2, dest, intermed1);
+            listLangkah.add(new Langkah(source, intermed2));
+            listLangkah.add(new Langkah(source, dest));
+            listLangkah.add(new Langkah(intermed2, dest));
+            memindahkanPiringan(topN - 2, intermed1, source, intermed2, dest);
+        }
+    }
+
 
     public void solveHanoi(int count)
     {
@@ -135,6 +163,10 @@ public class HanoiGameView extends View {
         {
             actionOnTouchedRod(rightRod); // 'C'
         }
+        else if(l.asal == 'D')
+        {
+            actionOnTouchedRod(lastRod); // 'D'
+        }
 
         if(l.tujuan == 'A')
         {
@@ -147,6 +179,10 @@ public class HanoiGameView extends View {
         else if(l.tujuan == 'C')
         {
             actionOnTouchedRod(rightRod); // 'C'
+        }
+        else if(l.tujuan == 'D')
+        {
+            actionOnTouchedRod(lastRod); // 'C'
         }
 
         invalidate();
@@ -162,12 +198,12 @@ public class HanoiGameView extends View {
 		// upward for each disk.
 
 		// some numbers to understand the translations
-		// first rod located at: x = 90px
+		// first rod located at: x = 115px
 		// first disk located at: y = 230px
 		// distance between rods: x = 150px
 		// distance between disks: y -= 25px
 
-		canvas.translate(90, 230);
+		canvas.translate(115, 230);
 		canvas.save();
 		for (HanoiDiskShape disk : leftRod) {
 
@@ -176,7 +212,7 @@ public class HanoiGameView extends View {
 		}
 		canvas.restore();
 
-		canvas.translate(175, 0);
+		canvas.translate(95, 0);
 		canvas.save();
 		for (HanoiDiskShape disk : middleRod) {
 
@@ -185,14 +221,23 @@ public class HanoiGameView extends View {
 		}
 		canvas.restore();
 
-		canvas.translate(168, 0);
-		canvas.save();
-		for (HanoiDiskShape disk : rightRod) {
+        canvas.translate(105, 0);
+        canvas.save();
+        for (HanoiDiskShape disk : rightRod) {
 
-			disk.draw(canvas);
-			canvas.translate(0, -25);
-		}
-		canvas.restore();
+            disk.draw(canvas);
+            canvas.translate(0, -25);
+        }
+        canvas.restore();
+
+        canvas.translate(100, 0);
+        canvas.save();
+        for (HanoiDiskShape disk : lastRod) {
+
+            disk.draw(canvas);
+            canvas.translate(0, -25);
+        }
+        canvas.restore();
 	}
 
 	/**
@@ -280,8 +325,8 @@ public class HanoiGameView extends View {
 			}
 		}
 
-		// if all disks are in the middle or right rod, game finished!
-		if (middleRod.size() == numberOfDisks || rightRod.size() == numberOfDisks) {
+		// if all disks are in the middle or right rod or last rod game finished!
+		if (middleRod.size() == numberOfDisks || rightRod.size() == numberOfDisks || lastRod.size() == numberOfDisks) {
 
 			gameFinished = true;
 		}
@@ -298,7 +343,7 @@ public class HanoiGameView extends View {
 
 			this.unselect();
 
-			this.size = _size * 25;
+			this.size = _size * 15;
 			this.setBounds(0, 0, this.size, 20);
 		}
 

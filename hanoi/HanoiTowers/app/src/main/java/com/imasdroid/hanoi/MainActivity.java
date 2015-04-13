@@ -53,7 +53,7 @@ public class MainActivity extends Activity {
         try
         {
             int number = Integer.parseInt(jumlahPiringan.getText().toString());
-            if(number >= 3 && number <= 6)
+            if(number >= 3 && number <= 7)
             {
                 intent.putExtra(NUMBER_DISK, jumlahPiringan.getText().toString());
                 startActivity(intent);
